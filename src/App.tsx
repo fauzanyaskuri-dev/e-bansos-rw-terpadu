@@ -10,6 +10,7 @@ import { LoginScreen } from './components/LoginScreen';
 import { AdminRTScreen } from './components/AdminRTScreen';
 import { AdminRWScreen } from './components/AdminRWScreen';
 import { InfoScreen } from './components/InfoScreen';
+import { PwaInstallBanner } from './components/PwaInstallBanner';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<ScreenType>('home');
@@ -134,6 +135,9 @@ export default function App() {
       {currentScreen !== 'admin-rt' && currentScreen !== 'admin-rw' && (
         <Footer onNavigate={handleNavigate} />
       )}
+
+      {/* PWA & Mobile Native App Install / Status Banner */}
+      <PwaInstallBanner />
     </div>
   );
 }
