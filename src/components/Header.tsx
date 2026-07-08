@@ -41,10 +41,10 @@ export const Header: React.FC<HeaderProps> = ({ currentScreen, onNavigate, isLog
         </div>
 
         {!isTransactional ? (
-          <nav className="hidden md:flex gap-6 h-full items-center">
+          <nav className="hidden lg:flex gap-4 h-full items-center">
             <button 
               onClick={() => handleNavClick('home')}
-              className={`px-4 py-2 font-extrabold text-sm transition-all rounded-lg ${
+              className={`px-3 py-2 font-extrabold text-sm transition-all rounded-lg ${
                 currentScreen === 'home' 
                   ? 'bg-black text-white border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' 
                   : 'text-zinc-700 hover:text-black hover:bg-zinc-100'
@@ -53,24 +53,54 @@ export const Header: React.FC<HeaderProps> = ({ currentScreen, onNavigate, isLog
               Beranda
             </button>
             <button 
+              onClick={() => handleNavClick('dashboard')}
+              className={`px-3 py-2 font-extrabold text-sm transition-all rounded-lg ${
+                currentScreen === 'dashboard' 
+                  ? 'bg-black text-white border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' 
+                  : 'text-zinc-700 hover:text-black hover:bg-zinc-100'
+              }`}
+            >
+              Dashboard
+            </button>
+            <button 
+              onClick={() => handleNavClick('statistics')}
+              className={`px-3 py-2 font-extrabold text-sm transition-all rounded-lg ${
+                currentScreen === 'statistics' 
+                  ? 'bg-black text-white border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' 
+                  : 'text-zinc-700 hover:text-black hover:bg-zinc-100'
+              }`}
+            >
+              Statistik
+            </button>
+            <button 
               onClick={() => handleNavClick('tracking')}
-              className={`px-4 py-2 font-extrabold text-sm transition-all rounded-lg ${
+              className={`px-3 py-2 font-extrabold text-sm transition-all rounded-lg ${
                 currentScreen === 'tracking' 
                   ? 'bg-black text-white border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' 
                   : 'text-zinc-700 hover:text-black hover:bg-zinc-100'
               }`}
             >
-              Lacak Status
+              Lacak
+            </button>
+            <button 
+              onClick={() => handleNavClick('settings')}
+              className={`px-3 py-2 font-extrabold text-sm transition-all rounded-lg ${
+                currentScreen === 'settings' 
+                  ? 'bg-black text-white border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' 
+                  : 'text-zinc-700 hover:text-black hover:bg-zinc-100'
+              }`}
+            >
+              Pengaturan
             </button>
             <button 
               onClick={() => handleNavClick('help')}
-              className={`px-4 py-2 font-extrabold text-sm transition-all rounded-lg ${
+              className={`px-3 py-2 font-extrabold text-sm transition-all rounded-lg ${
                 currentScreen === 'help' 
                   ? 'bg-black text-white border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' 
                   : 'text-zinc-700 hover:text-black hover:bg-zinc-100'
               }`}
             >
-              Pusat Bantuan
+              Bantuan
             </button>
           </nav>
         ) : (
@@ -124,7 +154,7 @@ export const Header: React.FC<HeaderProps> = ({ currentScreen, onNavigate, isLog
           
           <button 
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden text-black p-2 rounded-lg border-2 border-black bg-zinc-100 cursor-pointer flex items-center justify-center"
+            className="lg:hidden text-black p-2 rounded-lg border-2 border-black bg-zinc-100 cursor-pointer flex items-center justify-center"
             aria-label="Toggle mobile menu"
           >
             <span className="material-symbols-outlined">{mobileMenuOpen ? 'close' : 'menu'}</span>
@@ -134,7 +164,7 @@ export const Header: React.FC<HeaderProps> = ({ currentScreen, onNavigate, isLog
 
       {/* Mobile Navigation Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden absolute top-20 left-0 w-full bg-white border-b-2 border-black shadow-[0_8px_0_0_rgba(0,0,0,1)] p-6 space-y-4 animate-in fade-in slide-in-from-top-4 z-50">
+        <div className="lg:hidden absolute top-20 left-0 w-full bg-white border-b-2 border-black shadow-[0_8px_0_0_rgba(0,0,0,1)] p-6 space-y-4 animate-in fade-in slide-in-from-top-4 z-50">
           <div className="flex flex-col space-y-2">
             <button 
               onClick={() => handleNavClick('home')}
@@ -145,12 +175,36 @@ export const Header: React.FC<HeaderProps> = ({ currentScreen, onNavigate, isLog
               Beranda
             </button>
             <button 
+              onClick={() => handleNavClick('dashboard')}
+              className={`w-full text-left px-4 py-3 font-extrabold text-sm rounded-xl border-2 ${
+                currentScreen === 'dashboard' ? 'bg-amber-300 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' : 'border-transparent hover:bg-zinc-100'
+              }`}
+            >
+              Dashboard Warga
+            </button>
+            <button 
+              onClick={() => handleNavClick('statistics')}
+              className={`w-full text-left px-4 py-3 font-extrabold text-sm rounded-xl border-2 ${
+                currentScreen === 'statistics' ? 'bg-amber-300 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' : 'border-transparent hover:bg-zinc-100'
+              }`}
+            >
+              Statistik RW 03
+            </button>
+            <button 
               onClick={() => handleNavClick('tracking')}
               className={`w-full text-left px-4 py-3 font-extrabold text-sm rounded-xl border-2 ${
                 currentScreen === 'tracking' ? 'bg-amber-300 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' : 'border-transparent hover:bg-zinc-100'
               }`}
             >
               Lacak Status NIK
+            </button>
+            <button 
+              onClick={() => handleNavClick('settings')}
+              className={`w-full text-left px-4 py-3 font-extrabold text-sm rounded-xl border-2 ${
+                currentScreen === 'settings' ? 'bg-amber-300 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' : 'border-transparent hover:bg-zinc-100'
+              }`}
+            >
+              Pengaturan &amp; PWA
             </button>
             <button 
               onClick={() => handleNavClick('help')}

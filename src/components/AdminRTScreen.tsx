@@ -121,10 +121,8 @@ export const AdminRTScreen: React.FC<AdminRTScreenProps> = ({ applicants, onUpda
 
         <nav className="flex-1 space-y-2 overflow-y-auto">
           <button 
-            onClick={() => { setActiveTab('dashboard'); setMobileSidebarOpen(false); }}
-            className={`w-full flex items-center gap-3 px-4 py-3 cursor-pointer rounded-xl font-bold text-sm transition-all border-2 ${
-              activeTab === 'dashboard' ? 'bg-amber-300 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' : 'border-transparent hover:border-black hover:bg-zinc-100'
-            }`}
+            onClick={() => onNavigate('dashboard')}
+            className={`w-full flex items-center gap-3 px-4 py-3 cursor-pointer rounded-xl font-bold text-sm transition-all border-2 border-transparent hover:border-black hover:bg-zinc-100`}
           >
             <span className="material-symbols-outlined">dashboard</span>
             <span>Dashboard</span>
@@ -149,20 +147,16 @@ export const AdminRTScreen: React.FC<AdminRTScreenProps> = ({ applicants, onUpda
           </button>
 
           <button 
-            onClick={() => { setActiveTab('statistik'); setMobileSidebarOpen(false); }}
-            className={`w-full flex items-center gap-3 px-4 py-3 cursor-pointer rounded-xl font-bold text-sm transition-all border-2 ${
-              activeTab === 'statistik' ? 'bg-amber-300 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' : 'border-transparent hover:border-black hover:bg-zinc-100'
-            }`}
+            onClick={() => onNavigate('statistics')}
+            className={`w-full flex items-center gap-3 px-4 py-3 cursor-pointer rounded-xl font-bold text-sm transition-all border-2 border-transparent hover:border-black hover:bg-zinc-100`}
           >
             <span className="material-symbols-outlined">bar_chart</span>
             <span>Statistik</span>
           </button>
 
           <button 
-            onClick={() => { setActiveTab('pengaturan'); setMobileSidebarOpen(false); }}
-            className={`w-full flex items-center gap-3 px-4 py-3 cursor-pointer rounded-xl font-bold text-sm transition-all border-2 ${
-              activeTab === 'pengaturan' ? 'bg-amber-300 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' : 'border-transparent hover:border-black hover:bg-zinc-100'
-            }`}
+            onClick={() => onNavigate('settings')}
+            className={`w-full flex items-center gap-3 px-4 py-3 cursor-pointer rounded-xl font-bold text-sm transition-all border-2 border-transparent hover:border-black hover:bg-zinc-100`}
           >
             <span className="material-symbols-outlined">settings</span>
             <span>Pengaturan</span>

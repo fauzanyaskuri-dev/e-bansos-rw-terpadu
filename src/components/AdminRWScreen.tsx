@@ -1,5 +1,15 @@
 import React, { useState } from 'react';
 import { ScreenType, BansosApplicant } from '../types';
+import { 
+  ResponsiveContainer, 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  Tooltip, 
+  Legend, 
+  CartesianGrid 
+} from 'recharts';
 
 interface AdminRWScreenProps {
   applicants: BansosApplicant[];
@@ -21,6 +31,28 @@ export const AdminRWScreen: React.FC<AdminRWScreenProps> = ({ applicants, onUpda
   const menungguCount = applicants.filter(a => a.statusRW === 'Menunggu').length;
   const disetujuiCount = applicants.filter(a => a.statusRW === 'Disetujui').length;
   const ditolakCount = applicants.filter(a => a.statusRW === 'Ditolak').length;
+
+  // Aggregate status counts (Pending, Approved, Rejected) by RT area for Recharts BarChart
+  const rtMap: Record<string, { rt: string; Menunggu: number; Disetujui: number; Ditolak: number }> = {};
+  ['1', '2', '3', '4', '5'].forEach(rtNum => {
+    rtMap[rtNum] = { rt: `RT 0${rtNum}`, Menunggu: 0, Disetujui: 0, Ditolak: 0 };
+  });
+
+  applicants.forEach(item => {
+    const rtKey = item.rt || '1';
+    if (!rtMap[rtKey]) {
+      rtMap[rtKey] = { rt: `RT 0${rtKey}`, Menunggu: 0, Disetujui: 0, Ditolak: 0 };
+    }
+    if (item.statusRW === 'Disetujui') {
+      rtMap[rtKey].Disetujui += 1;
+    } else if (item.statusRW === 'Ditolak') {
+      rtMap[rtKey].Ditolak += 1;
+    } else {
+      rtMap[rtKey].Menunggu += 1;
+    }
+  });
+
+  const chartData = Object.values(rtMap);
 
   const handleApproveRW = (id: string) => {
     onUpdateStatusRW(id, 'Disetujui');
@@ -134,11 +166,11 @@ export const AdminRWScreen: React.FC<AdminRWScreenProps> = ({ applicants, onUpda
 
         <nav className="flex-1 space-y-2 overflow-y-auto">
           <button 
-            onClick={() => onNavigate('admin-rt')}
+            onClick={() => onNavigate('dashboard')}
             className="w-full flex items-center gap-3 px-4 py-3 cursor-pointer rounded-xl font-bold text-sm transition-all border-2 border-transparent hover:border-black hover:bg-zinc-100"
           >
             <span className="material-symbols-outlined">dashboard</span>
-            <span>Dashboard RT</span>
+            <span>Dashboard</span>
           </button>
           
           <button 
@@ -146,7 +178,7 @@ export const AdminRWScreen: React.FC<AdminRWScreenProps> = ({ applicants, onUpda
             className="w-full flex items-center gap-3 px-4 py-3 cursor-pointer rounded-xl font-bold text-sm transition-all border-2 border-transparent hover:border-black hover:bg-zinc-100"
           >
             <span className="material-symbols-outlined">fact_check</span>
-            <span>Verifikasi Data</span>
+            <span>Verifikasi RT</span>
           </button>
 
           <div className="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-black text-sm bg-amber-300 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
@@ -155,7 +187,7 @@ export const AdminRWScreen: React.FC<AdminRWScreenProps> = ({ applicants, onUpda
           </div>
 
           <button 
-            onClick={() => alert('Modul Statistik RW aktif. Total penerima: 24 Kepala Keluarga.')}
+            onClick={() => onNavigate('statistics')}
             className="w-full flex items-center gap-3 px-4 py-3 cursor-pointer rounded-xl font-bold text-sm transition-all border-2 border-transparent hover:border-black hover:bg-zinc-100"
           >
             <span className="material-symbols-outlined">bar_chart</span>
@@ -163,7 +195,7 @@ export const AdminRWScreen: React.FC<AdminRWScreenProps> = ({ applicants, onUpda
           </button>
 
           <button 
-            onClick={() => alert('Modul Pengaturan sistem aktif.')}
+            onClick={() => onNavigate('settings')}
             className="w-full flex items-center gap-3 px-4 py-3 cursor-pointer rounded-xl font-bold text-sm transition-all border-2 border-transparent hover:border-black hover:bg-zinc-100"
           >
             <span className="material-symbols-outlined">settings</span>
@@ -301,50 +333,60 @@ export const AdminRWScreen: React.FC<AdminRWScreenProps> = ({ applicants, onUpda
           </div>
         </section>
 
-        {/* Right Column: Stats (30%) */}
+        {/* Right Column: Stats & Recharts Bar Chart (30%) */}
         <section className="lg:w-1/3 flex flex-col gap-6">
           <div className="bold-card bg-white p-6">
-            <h3 className="text-lg font-black text-black mb-4 pb-3 border-b-2 border-black">
-              Statistik RW 03
+            <h3 className="text-lg font-black text-black mb-4 pb-3 border-b-2 border-black flex items-center justify-between">
+              <span>Statistik Status per RT</span>
+              <span className="text-xs font-bold px-2.5 py-1 bg-amber-300 border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">RW 03</span>
             </h3>
             
-            {/* Pie Chart Graphic Placeholder */}
-            <div className="relative w-48 h-48 mx-auto my-6 flex items-center justify-center rounded-full bg-zinc-100 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-              <div className="absolute inset-0 rounded-full overflow-hidden" style={{ background: 'conic-gradient(#facc15 0deg 180deg, #4ade80 180deg 280deg, #f87171 280deg 360deg)' }}></div>
-              <div className="relative w-32 h-32 bg-white border-2 border-black rounded-full flex flex-col items-center justify-center shadow-sm">
-                <span className="text-2xl font-black text-black">24</span>
-                <span className="text-xs font-bold text-zinc-600">Total Ajuan</span>
-              </div>
+            {/* Recharts Bar Chart */}
+            <div className="w-full h-64 mt-2">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={chartData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" />
+                  <XAxis dataKey="rt" tick={{ fontSize: 11, fontWeight: 'bold' }} stroke="#000" />
+                  <YAxis tick={{ fontSize: 11, fontWeight: 'bold' }} stroke="#000" allowDecimals={false} />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#fff', border: '2px solid #000', borderRadius: '12px', fontWeight: 'bold', fontSize: '12px', boxShadow: '3px 3px 0px 0px rgba(0,0,0,1)' }}
+                  />
+                  <Legend wrapperStyle={{ fontSize: '11px', fontWeight: 'bold', paddingTop: '8px' }} />
+                  <Bar dataKey="Menunggu" name="Menunggu" fill="#facc15" stroke="#000" strokeWidth={1.5} radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="Disetujui" name="Disetujui" fill="#4ade80" stroke="#000" strokeWidth={1.5} radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="Ditolak" name="Ditolak" fill="#f87171" stroke="#000" strokeWidth={1.5} radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
 
-            {/* Legend */}
-            <div className="space-y-3 mt-4">
+            {/* Summary Legend / Counts */}
+            <div className="space-y-3 mt-6">
               <div className="flex items-center justify-between p-3 bg-zinc-50 rounded-xl border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-4 rounded-md bg-amber-300 border border-black"></div>
                   <span className="text-xs font-black text-black">Menunggu RW</span>
                 </div>
-                <span className="text-xs font-black text-black">12</span>
+                <span className="text-xs font-black text-black">{applicants.filter(a => a.statusRW === 'Menunggu').length}</span>
               </div>
               <div className="flex items-center justify-between p-3 bg-zinc-50 rounded-xl border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-4 rounded-md bg-emerald-400 border border-black"></div>
-                  <span className="text-xs font-black text-black">Disetujui RT</span>
+                  <span className="text-xs font-black text-black">Disetujui RW</span>
                 </div>
-                <span className="text-xs font-black text-black">8</span>
+                <span className="text-xs font-black text-black">{applicants.filter(a => a.statusRW === 'Disetujui').length}</span>
               </div>
               <div className="flex items-center justify-between p-3 bg-zinc-50 rounded-xl border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-4 rounded-md bg-rose-400 border border-black"></div>
-                  <span className="text-xs font-black text-black">Ditolak RT</span>
+                  <span className="text-xs font-black text-black">Ditolak RW</span>
                 </div>
-                <span className="text-xs font-black text-black">4</span>
+                <span className="text-xs font-black text-black">{applicants.filter(a => a.statusRW === 'Ditolak').length}</span>
               </div>
             </div>
 
             <div className="mt-6 pt-4 border-t-2 border-black">
               <p className="text-xs font-bold text-zinc-600 text-center leading-relaxed">
-                Data diperbarui secara real-time berdasarkan input dari masing-masing Ketua RT di wilayah RW 03.
+                Grafik batang rekapitulasi status per RT wilayah RW 03.
               </p>
             </div>
           </div>

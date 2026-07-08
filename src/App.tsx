@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ScreenType, BansosApplicant } from './types';
 import { INITIAL_APPLICANTS } from './data';
 import { Header } from './components/Header';
@@ -10,7 +10,16 @@ import { LoginScreen } from './components/LoginScreen';
 import { AdminRTScreen } from './components/AdminRTScreen';
 import { AdminRWScreen } from './components/AdminRWScreen';
 import { InfoScreen } from './components/InfoScreen';
+import { DashboardScreen } from './components/DashboardScreen';
+import { StatisticsScreen } from './components/StatisticsScreen';
+import { SettingsScreen } from './components/SettingsScreen';
 import { PwaInstallBanner } from './components/PwaInstallBanner';
+import { 
+  initializeFirestoreData, 
+  subscribeToApplicants, 
+  addApplicantToFirestore, 
+  updateApplicantInFirestore 
+} from './lib/firebase';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<ScreenType>('home');
@@ -19,8 +28,15 @@ export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [userRole, setUserRole] = useState<'rt' | 'rw' | null>(null);
 
+  useEffect(() => {
+    initializeFirestoreData();
+    const unsubscribe = subscribeToApplicants((data) => {
+      setApplicants(data);
+    });
+    return () => unsubscribe();
+  }, []);
+
   const handleNavigate = (screen: ScreenType) => {
-    // If trying to access admin screens without login, prompt login or auto demo login
     if ((screen === 'admin-rt' || screen === 'admin-rw') && !isLoggedIn) {
       setCurrentScreen('login');
       return;
@@ -49,20 +65,28 @@ export default function App() {
     setSearchedNik(nik);
   };
 
-  const handleAddApplicant = (newApplicant: BansosApplicant) => {
-    setApplicants([newApplicant, ...applicants]);
+  const handleAddApplicant = async (newApplicant: BansosApplicant) => {
+    // Optimistic update + Firebase
+    setApplicants(prev => [newApplicant, ...prev]);
+    await addApplicantToFirestore(newApplicant);
   };
 
-  const handleUpdateStatus = (id: string, status: 'Disetujui' | 'Ditolak') => {
+  const handleUpdateStatus = async (id: string, status: 'Disetujui' | 'Ditolak') => {
+    const updatedStatusRW = status === 'Ditolak' ? 'Ditolak' : applicants.find(i => i.id === id)?.statusRW || 'Menunggu';
     setApplicants(prev => prev.map(item => item.id === id ? { 
       ...item, 
       statusRT: status,
-      statusRW: status === 'Ditolak' ? 'Ditolak' : item.statusRW 
+      statusRW: updatedStatusRW 
     } : item));
+    await updateApplicantInFirestore(id, { 
+      statusRT: status, 
+      statusRW: updatedStatusRW 
+    });
   };
 
-  const handleUpdateStatusRW = (id: string, status: 'Disetujui' | 'Ditolak') => {
+  const handleUpdateStatusRW = async (id: string, status: 'Disetujui' | 'Ditolak') => {
     setApplicants(prev => prev.map(item => item.id === id ? { ...item, statusRW: status } : item));
+    await updateApplicantInFirestore(id, { statusRW: status });
   };
 
   return (
@@ -96,6 +120,27 @@ export default function App() {
           onNavigate={handleNavigate} 
           searchedNik={searchedNik} 
           applicants={applicants} 
+        />
+      )}
+
+      {currentScreen === 'dashboard' && (
+        <DashboardScreen 
+          applicants={applicants} 
+          onNavigate={handleNavigate} 
+        />
+      )}
+
+      {currentScreen === 'statistics' && (
+        <StatisticsScreen 
+          applicants={applicants} 
+          onNavigate={handleNavigate} 
+        />
+      )}
+
+      {currentScreen === 'settings' && (
+        <SettingsScreen 
+          applicants={applicants} 
+          onNavigate={handleNavigate} 
         />
       )}
 

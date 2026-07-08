@@ -1,0 +1,30 @@
+{
+  "entities": {
+    "BansosApplicant": {
+      "title": "Bansos Applicant",
+      "description": "Applicant for social assistance (Bansos)",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "nik": { "type": "string" },
+        "name": { "type": "string" },
+        "rt": { "type": "string" },
+        "rw": { "type": "string" },
+        "job": { "type": "string" },
+        "monthlyIncome": { "type": "number" },
+        "statusRT": { "type": "string" },
+        "statusRW": { "type": "string" },
+        "submissionDate": { "type": "string" },
+        "bansosType": { "type": "string" },
+        "ktpPhoto": { "type": "string" }
+      },
+      "required": ["id", "nik", "name", "rt", "rw", "job", "monthlyIncome", "statusRT", "statusRW", "submissionDate", "bansosType"]
+    }
+  },
+  "firestore": {
+    "applicants/{applicantId}": {
+      "schema": { "$ref": "BansosApplicant" },
+      "description": "Collection of bansos applicants"
+    }
+  }
+}
