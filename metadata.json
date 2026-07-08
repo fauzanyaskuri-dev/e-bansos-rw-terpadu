@@ -1,0 +1,6 @@
+{
+  "name": "Portal E-Bansos RW",
+  "description": "Layanan Sosial Terpadu Pemerintah untuk pengecekan status dan pendaftaran bantuan sosial di tingkat RW dan RT secara transparan dan akuntabel.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
